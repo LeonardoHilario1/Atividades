@@ -1,0 +1,249 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_USERS 1000
+#define MAX_NAME_LENGTH 100
+#define MAX_EMAIL_LENGTH 100
+#define MAX_ADDRESS_LENGTH 100
+
+typedef struct {
+    int id;
+    char name[MAX_NAME_LENGTH];
+    char email[MAX_EMAIL_LENGTH];
+    char gender[MAX_NAME_LENGTH];
+    char address[MAX_ADDRESS_LENGTH];
+    double height;
+    int vaccine;
+} User;
+
+User users[MAX_USERS];
+int numUsers = 0;
+
+void addUser() {
+    if (numUsers >= MAX_USERS) {
+        printf("Número máximo de usuários atingido.\n");
+        return;
+    }
+
+    User newUser;
+    newUser.id = rand(); // Gerando um ID aleatório
+    printf("Digite o nome completo: ");
+    fgets(newUser.name, MAX_NAME_LENGTH, stdin);
+    printf("Digite o email: ");
+    fgets(newUser.email, MAX_EMAIL_LENGTH, stdin);
+    printf("Digite o sexo (Feminino, Masculino ou Indiferente): ");
+    fgets(newUser.gender, MAX_NAME_LENGTH, stdin);
+    printf("Digite o endereço: ");
+    fgets(newUser.address, MAX_ADDRESS_LENGTH, stdin);
+    printf("Digite a altura (entre 1 e 2 metros): ");
+    scanf("%lf", &newUser.height);
+    printf("Recebeu a vacina? (1 - Sim, 0 - Não): ");
+    scanf("%d", &newUser.vaccine);
+
+    getchar(); // Limpar o buffer do teclado
+
+    users[numUsers] = newUser;
+    numUsers++;
+
+    printf("Usuário adicionado com sucesso!\n");
+}
+
+void editUser() {
+    int id;
+    printf("Digite o ID do usuário a ser editado: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < numUsers; i++) {
+        if (users[i].id == id) {
+            printf("Digite o novo nome completo: ");
+            fgets(users[i].name, MAX_NAME_LENGTH, stdin);
+            printf("Digite o novo email: ");
+            fgets(users[i].email, MAX_EMAIL_LENGTH, stdin);
+            printf("Digite o novo sexo (Feminino, Masculino ou Indiferente): ");
+            fgets(users[i].gender, MAX_NAME_LENGTH, stdin);
+            printf("Digite o novo endereço: ");
+            fgets(users[i].address, MAX_ADDRESS_LENGTH, stdin);
+            printf("Digite a nova altura (entre 1 e 2 metros): ");
+            scanf("%lf", &users[i].height);
+            printf("Recebeu a vacina? (1 - Sim, 0 - Não): ");
+            scanf("%d", &users[i].vaccine);
+
+            getchar(); // Limpar o buffer do teclado
+
+            printf("Usuário editado com sucesso!\n");
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Usuário não encontrado.\n");
+    }
+}
+
+void deleteUser() {
+    int id;
+    printf("Digite o ID do usuário a ser excluído: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < numUsers; i++) {
+        if (users[i].id == id) {
+            for (int j = i; j < numUsers - 1; j++) {
+                users[j] = users[j + 1];
+            }
+            numUsers--;
+
+            printf("Usuário excluído com sucesso!\n");
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Usuário não encontrado.\n");
+    }
+}
+
+void searchUserByEmail() {
+    char email[MAX_EMAIL_LENGTH];
+    printf("Digite o email do usuário a ser buscado: ");
+    fgets(email, MAX_EMAIL_LENGTH, stdin);
+
+    int found = 0;
+    for (int i = 0; i < numUsers; i++) {
+        if (strcmp(users[i].email, email) == 0) {
+            printf("Usuário encontrado:\n");
+            printf("ID: %d\n", users[i].id);
+            printf("Nome: %s", users[i].name);
+            printf("Email: %s", users[i].email);
+            printf("Sexo: %s", users[i].gender);
+            printf("Endereço: %s", users[i].address);
+            printf("Altura: %.2f\n", users[i].height);
+            printf("Recebeu a vacina? %s\n", users[i].vaccine ? "Sim" : "Não");
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Usuário não encontrado.\n");
+    }
+}
+
+void printAllUsers() {
+    printf("Lista de usuários cadastrados:\n");
+    for (int i = 0; i < numUsers; i++) {
+        printf("ID: %d\n", users[i].id);
+        printf("Nome: %s", users[i].name);
+        printf("Email: %s", users[i].email);
+        printf("Sexo: %s", users[i].gender);
+        printf("Endereço: %s", users[i].address);
+        printf("Altura: %.2f\n", users[i].height);
+        printf("Recebeu a vacina? %s\n", users[i].vaccine ? "Sim" : "Não");
+        printf("--------------------\n");
+    }
+}
+
+void backupUsers() {
+    FILE *file = fopen("backup.txt", "w");
+    if (file == NULL) {
+        printf("Erro ao criar o arquivo de backup.\n");
+        return;
+    }
+
+    for (int i = 0; i < numUsers; i++) {
+        fprintf(file, "%d\n", users[i].id);
+        fprintf(file, "%s", users[i].name);
+        fprintf(file, "%s", users[i].email);
+        fprintf(file, "%s", users[i].gender);
+        fprintf(file, "%s", users[i].address);
+        fprintf(file, "%.2f\n", users[i].height);
+        fprintf(file, "%d\n", users[i].vaccine);
+    }
+
+    fclose(file);
+
+    printf("Backup dos usuários realizado com sucesso!\n");
+}
+
+void restoreUsers() {
+    FILE *file = fopen("backup.txt", "r");
+    if (file == NULL) {
+        printf("Arquivo de backup não encontrado.\n");
+        return;
+    }
+
+    numUsers = 0;
+
+    while (1) {
+        User newUser;
+        if (fscanf(file, "%d\n", &newUser.id) == EOF) {
+            break;
+        }
+        fgets(newUser.name, MAX_NAME_LENGTH, file);
+        fgets(newUser.email, MAX_EMAIL_LENGTH, file);
+        fgets(newUser.gender, MAX_NAME_LENGTH, file);
+        fgets(newUser.address, MAX_ADDRESS_LENGTH, file);
+        fscanf(file, "%lf\n", &newUser.height);
+        fscanf(file, "%d\n", &newUser.vaccine);
+
+        users[numUsers] = newUser;
+        numUsers++;
+    }
+
+    fclose(file);
+
+    printf("Restauração dos usuários realizada com sucesso!\n");
+}
+
+int main() {
+    char choice;
+
+    while (1) {
+        printf("\nOpções:\n");
+        printf("1. Incluir usuário\n");
+        printf("2. Editar usuário\n");
+        printf("3. Excluir usuário\n");
+        printf("4. Buscar usuário por email\n");
+        printf("5. Imprimir todos os usuários cadastrados\n");
+        printf("6. Fazer backup dos usuários cadastrados\n");
+        printf("7. Restaurar dados dos usuários\n");
+        printf("8. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf(" %c", &choice);
+
+        getchar(); // Limpar o buffer do teclado
+
+        switch (choice) {
+            case '1':
+                addUser();
+                break;
+            case '2':
+                editUser();
+                break;
+            case '3':
+                deleteUser();
+                break;
+            case '4':
+                searchUserByEmail();
+                break;
+            case '5':
+                printAllUsers();
+                break;
+            case '6':
+                backupUsers();
+                break;
+            case '7':
+                restoreUsers();
+                break;
+            case '8':
+                printf("Encerrando o programa...\n");
+                return 0;
+            default:
+                printf("Opção inválida. Por favor, tente novamente.\n");
+        }
+    }
+}
