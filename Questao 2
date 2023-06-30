@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura para armazenar informações sobre dietas
+typedef struct Dieta {
+    char comida[100];
+    float pesoPorcao;
+    int calorias;
+    struct Dieta *prox;
+} Dieta;
+
+// Função para solicitar os dados de uma dieta
+Dieta *solicitarDieta() {
+    Dieta *dieta = (Dieta *)malloc(sizeof(Dieta));
+    printf("Comida: ");
+    scanf(" %[^\n]", dieta->comida);
+    printf("Peso da Porcao: ");
+    scanf("%f", &(dieta->pesoPorcao));
+    printf("Calorias: ");
+    scanf("%d", &(dieta->calorias));
+    dieta->prox = NULL;
+    return dieta;
+}
+
+// Função para listar todos os dados das dietas
+void listarDietas(Dieta *inicio) {
+    printf("------ Dietas ------\n");
+    Dieta *dieta = inicio;
+    while (dieta != NULL) {
+        printf("Comida: %s\n", dieta->comida);
+        printf("Peso da Porcao: %.2f\n", dieta->pesoPorcao);
+        printf("Calorias: %d\n", dieta->calorias);
+        printf("--------------------\n");
+        dieta = dieta->prox;
+    }
+}
+
+int main() {
+    Dieta *inicio = NULL;
+    int opcao;
+
+    do {
+        printf("Selecione uma opcao:\n");
+        printf("1. Adicionar dieta\n");
+        printf("2. Listar dietas\n");
+        printf("0. Sair\n");
+        printf("Opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                // Adicionar dieta
+                if (inicio == NULL) {
+                    inicio = solicitarDieta();
+                } else {
+                    Dieta *dieta = inicio;
+                    while (dieta->prox != NULL) {
+                        dieta = dieta->prox;
+                    }
+                    dieta->prox = solicitarDieta();
+                }
+                break;
+
+            case 2:
+                // Listar dietas
+                listarDietas(inicio);
+                break;
+
+            case 0:
+                // Sair
+                printf("Encerrando o programa.\n");
+                break;
+
+            default:
+                printf("Opcao invalida. Tente novamente.\n");
+                break;
+        }
+
+        printf("\n");
+    } while (opcao != 0);
+
+    return 0;
+}
