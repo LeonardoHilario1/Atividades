@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+typedef struct Restaurant {
+    char name[50];
+    char address[100];
+    float average_price;
+    char food_type[50];
+    struct Restaurant* next;
+} Restaurant;
+
+void insertRestaurant(Restaurant** head, const char* name, const char* address, float average_price, const char* food_type) {
+
+    Restaurant* newRestaurant = (Restaurant*)malloc(sizeof(Restaurant));
+    strcpy(newRestaurant->name, name);
+    strcpy(newRestaurant->address, address);
+    newRestaurant->average_price = average_price;
+    strcpy(newRestaurant->food_type, food_type);
+    newRestaurant->next = NULL;
+
+    
+    if (*head == NULL) {
+        *head = newRestaurant;
+    } else {
+        
+        Restaurant* current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newRestaurant;
+    }
+}
+
+
+void listRestaurants(const Restaurant* head) {
+    const Restaurant* current = head;
+    while (current != NULL) {
+        printf("Nome: %s\n", current->name);
+        printf("Endereço: %s\n", current->address);
+        printf("Preço Médio: %.2f\n", current->average_price);
+        printf("Tipo de Comida: %s\n\n", current->food_type);
+        current = current->next;
+    }
+}
+
+int main() {
+    Restaurant* head = NULL;
+
+    
+    char name[50];
+    char address[100];
+    float average_price;
+    char food_type[50];
+
+    printf("=== Cadastro de Restaurante ===\n");
+    printf("Nome: ");
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = '\0';  
+    printf("Endereço: ");
+    fgets(address, sizeof(address), stdin);
+    address[strcspn(address, "\n")] = '\0';  
+    printf("Preço Médio: ");
+    scanf("%f", &average_price);
+    getchar();  
+    printf("Tipo de Comida: ");
+    fgets(food_type, sizeof(food_type), stdin);
+    food_type[strcspn(food_type, "\n")] = '\0';  
+
+    insertRestaurant(&head, name, address, average_price, food_type);
+
+    printf("\n=== Lista de Restaurantes ===\n");
+    listRestaurants(head);
+
+    return 0;
+}
+
