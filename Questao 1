@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura para descrever restaurantes
+typedef struct Restaurante {
+    char nome[100];
+    char endereco[100];
+    float precoMedio;
+    char tipoComida[100];
+    struct Restaurante *prox;
+} Restaurante;
+
+// Função para solicitar os dados de um restaurante
+Restaurante *solicitarRestaurante() {
+    Restaurante *restaurante = (Restaurante *)malloc(sizeof(Restaurante));
+    printf("Nome: ");
+    scanf(" %[^\n]", restaurante->nome);
+    printf("Endereco: ");
+    scanf(" %[^\n]", restaurante->endereco);
+    printf("Preco Medio: ");
+    scanf("%f", &(restaurante->precoMedio));
+    printf("Tipo de Comida: ");
+    scanf(" %[^\n]", restaurante->tipoComida);
+    restaurante->prox = NULL;
+    return restaurante;
+}
+
+// Função para listar todos os dados dos restaurantes
+void listarRestaurantes(Restaurante *inicio) {
+    printf("------ Restaurantes ------\n");
+    Restaurante *restaurante = inicio;
+    while (restaurante != NULL) {
+        printf("Nome: %s\n", restaurante->nome);
+        printf("Endereco: %s\n", restaurante->endereco);
+        printf("Preco Medio: %.2f\n", restaurante->precoMedio);
+        printf("Tipo de Comida: %s\n", restaurante->tipoComida);
+        printf("--------------------------\n");
+        restaurante = restaurante->prox;
+    }
+}
+
+int main() {
+    Restaurante *inicio = NULL;
+    int opcao;
+
+    do {
+        printf("Selecione uma opcao:\n");
+        printf("1. Adicionar restaurante\n");
+        printf("2. Listar restaurantes\n");
+        printf("0. Sair\n");
+        printf("Opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                // Adicionar restaurante
+                if (inicio == NULL) {
+                    inicio = solicitarRestaurante();
+                } else {
+                    Restaurante *restaurante = inicio;
+                    while (restaurante->prox != NULL) {
+                        restaurante = restaurante->prox;
+                    }
+                    restaurante->prox = solicitarRestaurante();
+                }
+                break;
+
+            case 2:
+                // Listar restaurantes
+                listarRestaurantes(inicio);
+                break;
+
+            case 0:
+                // Sair
+                printf("Encerrando o programa.\n");
+                break;
+
+            default:
+                printf("Opcao invalida. Tente novamente.\n");
+                break;
+        }
+
+        printf("\n");
+    } while (opcao != 0);
+
+    return 0;
+}
